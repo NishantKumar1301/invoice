@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invoice Scanner</title>
+    <!-- Link to your CSS file -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'css/index.css' %}"
+    />
+  </head>
+  <body>
+    <h1>Invoice Scanner</h1>
+    <form id="invoiceForm" enctype="multipart/form-data" method="post">
+      {% csrf_token %}
+      <label for="imageInput">Upload Image:</label>
+      <input
+        type="file"
+        id="imageInput"
+        name="image"
+        accept="image/*"
+        required
+      />
+      <br />
+      <label for="questionInput">Enter your question:</label>
+      <input
+        type="text"
+        id="questionInput"
+        name="question"
+        placeholder="Enter your question..."
+        required
+      />
+      <br />
+      <button type="submit">Submit</button>
+    </form>
+    <div id="responseContainer"></div>
+
+    <script>
+      document
+        .getElementById('invoiceForm')
+        .addEventListener('submit', function (event) {
+          event.preventDefault()
+
+          var formData = new FormData(this)
+          fetch('/process_invoice/', {
+            method: 'POST',
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              document.getElementById('responseContainer').innerHTML =
+                '<p>' + data.response + '</p>'
+            })
+            .catch((error) => {
+              console.error('Error:', error)
+              document.getElementById('responseContainer').innerHTML =
+                '<p>Error processing the image.</p>'
+            })
+        })
+    </script>
+  </body>
+</html>
